@@ -1,0 +1,6 @@
+node_modules
+.idea
+.github
+.eslintrc.js
+.prettierrc
+role-nestjs-revision.json
