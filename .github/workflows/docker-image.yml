@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build -t repository/nestjs -f ./Dockerfile .
+      run: docker build -t repository/nestjs .
     - name: tag
       run: docker tag repository/nestjs:latest 471112669605.dkr.ecr.ap-northeast-2.amazonaws.com/repository/nestjs:latest
     - name: push
