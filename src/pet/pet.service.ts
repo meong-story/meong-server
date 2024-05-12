@@ -1,9 +1,10 @@
+import { UpdatePetDto } from './dto/update-pet.dto';
 import { Injectable } from '@nestjs/common';
 import { CreatePetDto } from './dto/create-pet.dto';
-import { UpdatePetDto } from './dto/update-pet.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pet } from './entities/pet.entity';
 import { Repository } from 'typeorm';
+import { Verification } from './entities/verification.entity';
 
 @Injectable()
 export class PetService {
@@ -12,32 +13,44 @@ export class PetService {
     private readonly petRepository: Repository<Pet>,
   ) {}
 
-  async create(createPetDto: CreatePetDto): Promise<Pet> {
+  async create(createPetDto: CreatePetDto): Promise<string> {
     const newPet = new Pet();
-    newPet.petName = createPetDto.petName;
+    newPet.name = createPetDto.name;
     newPet.birthYear = createPetDto.birthYear;
     newPet.gender = createPetDto.gender;
-    newPet.petImageUrl = createPetDto.petImageUrl ?? 'none';
-    newPet.bathCount = 0;
-    newPet.mealCount = 0;
-    newPet.treatCount = 0;
-    newPet.walkCount = 0;
-    return await this.petRepository.save(newPet);
+    newPet.imageUrl = createPetDto.imageUrl ?? 'none';
+
+    const savedPet = await this.petRepository.save(newPet);
+
+    const newVerification = new Verification();
+    newVerification.petId = savedPet.id;
+
+    await this.petRepository.save(newVerification);
+
+    return '애완동물 등록 성공!';
   }
 
-  findAll() {
-    return `This action returns all pet`;
+  async findAll() {
+    return await this.petRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pet`;
+  async findOne(id: string): Promise<Pet> {
+    return this.petRepository.findOne({
+      where: {
+        id,
+      },
+    });
   }
 
-  update(id: number, updatePetDto: UpdatePetDto) {
+  async findOneById(id: string): Promise<Pet> {
+    return await this.petRepository.findOne({ where: { id } });
+  }
+
+  update(id: string, updatePetDto: UpdatePetDto) {
     return `This action updates a #${id} pet`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} pet`;
   }
 }

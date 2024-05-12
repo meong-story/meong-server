@@ -1,6 +1,6 @@
 export class CreatePetDto {
-  petName: string;
-  petImageUrl?: string;
+  name: string;
+  imageUrl?: string;
   gender: '남' | '여';
   birthYear: number;
 }

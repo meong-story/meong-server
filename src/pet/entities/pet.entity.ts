@@ -3,29 +3,17 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class Pet {
   @PrimaryGeneratedColumn()
-  petId: string;
+  id: string;
 
-  @Column()
-  petName: string;
+  @Column({ default: '미지정' })
+  name: string;
 
-  @Column()
-  petImageUrl?: string;
+  @Column({ default: '' })
+  imageUrl?: string;
 
-  @Column()
+  @Column({ default: 2000 })
   birthYear: number;
 
-  @Column()
+  @Column({ default: '남' })
   gender: '남' | '여';
-
-  @Column()
-  mealCount: number;
-
-  @Column()
-  walkCount: number;
-
-  @Column()
-  bathCount: number;
-
-  @Column()
-  treatCount: number;
 }
