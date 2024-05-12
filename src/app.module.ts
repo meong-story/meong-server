@@ -4,6 +4,8 @@ import { Pet } from './pet/entities/pet.entity';
 import { PetService } from './pet/pet.service';
 import { PetController } from './pet/pet.controller';
 import { ConfigModule } from '@nestjs/config';
+import { AuthController } from './auth/auth.controller';
+import { AuthService } from './auth/auth.service';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { ConfigModule } from '@nestjs/config';
     }),
     TypeOrmModule.forFeature([Pet]),
   ],
-  providers: [PetService],
-  controllers: [PetController],
+  providers: [PetService, AuthService],
+  controllers: [PetController, AuthController],
 })
 export class AppModule {}
