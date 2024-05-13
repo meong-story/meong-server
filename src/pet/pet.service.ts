@@ -34,23 +34,26 @@ export class PetService {
     return await this.petRepository.find();
   }
 
-  async findOne(id: string): Promise<Pet> {
-    return this.petRepository.findOne({
-      where: {
-        id,
-      },
-    });
-  }
-
   async findOneById(id: string): Promise<Pet> {
     return await this.petRepository.findOne({ where: { id } });
   }
 
-  update(id: string, updatePetDto: UpdatePetDto) {
-    return `This action updates a #${id} pet`;
+  async update(id: string, updatedPet: UpdatePetDto) {
+    try {
+      await this.petRepository.update({ id }, updatedPet);
+      return { message: `Pet with ID ${id} has been updated.`, updatedPet };
+    } catch (error) {
+      throw new Error(`Failed to remove pet with id ${id}: ${error.message}`);
+    }
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} pet`;
+  async remove(id: string): Promise<Pet> {
+    try {
+      const deletedPet = await this.petRepository.delete({ id });
+      console.log(deletedPet);
+      return deletedPet.raw;
+    } catch (error) {
+      throw new Error(`Failed to remove pet with id ${id}: ${error.message}`);
+    }
   }
 }

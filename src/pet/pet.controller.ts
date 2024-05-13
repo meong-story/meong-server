@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
 } from '@nestjs/common';
@@ -26,13 +26,13 @@ export class PetController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.petService.findOne(id);
+  findOneById(@Param('id') id: string) {
+    return this.petService.findOneById(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePetDto: UpdatePetDto) {
-    return this.petService.update(id, updatePetDto);
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updatedPet: UpdatePetDto) {
+    return this.petService.update(id, updatedPet);
   }
 
   @Delete(':id')
