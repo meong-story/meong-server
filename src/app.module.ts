@@ -6,6 +6,7 @@ import { PetController } from './pet/pet.controller';
 import { ConfigModule } from '@nestjs/config';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
+import { Verification } from './pet/entities/verification.entity';
 
 @Module({
   imports: [
@@ -17,11 +18,11 @@ import { AuthService } from './auth/auth.service';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Pet],
+      entities: [Pet, Verification],
       synchronize: true,
       charset: 'utf8mb4',
     }),
-    TypeOrmModule.forFeature([Pet]),
+    TypeOrmModule.forFeature([Pet, Verification]),
   ],
   providers: [PetService, AuthService],
   controllers: [PetController, AuthController],

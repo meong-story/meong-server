@@ -39,4 +39,14 @@ export class PetController {
   remove(@Param('id') id: string) {
     return this.petService.remove(id);
   }
+
+  @Get('/verification/:id')
+  getVerificationById(@Param('id') id: string) {
+    return this.petService.getVerificationById(id);
+  }
+
+  @Get('/petInfo/:id')
+  getPetInfoById(@Param('id') id: string) {
+    return this.petService.getPetInfoById(id);
+  }
 }
