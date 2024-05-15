@@ -49,4 +49,12 @@ export class PetController {
   getPetInfoById(@Param('id') id: string) {
     return this.petService.getPetInfoById(id);
   }
+
+  @Put('/verification/increase/:id/:type')
+  setVerificationCountIncreasementByType(
+    @Param('id') id: string,
+    @Param('type') type: string,
+  ) {
+    return this.petService.setVerificationCountIncreasementByType(id, type);
+  }
 }

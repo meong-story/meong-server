@@ -95,4 +95,26 @@ export class PetService {
       throw new Error(`Failed to get pet info for ID ${id}: ${error.message}`);
     }
   }
+
+  async setVerificationCountIncreasementByType(id: string, type: string) {
+    try {
+      const newVerification = await this.verificationRepository.findOne({
+        where: { petId: id },
+      });
+      newVerification[type]++;
+      if (newVerification) {
+        await this.verificationRepository.update(
+          { petId: id },
+          newVerification,
+        );
+        return {
+          message: `Verification with ID ${id} has been updated.`,
+        };
+      } else {
+        throw new Error(`Failed to get verification info with petId`);
+      }
+    } catch (error) {
+      throw new Error(`Error!: ${error.message}`);
+    }
+  }
 }
