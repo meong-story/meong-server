@@ -11,6 +11,12 @@ import { PetService } from './pet.service';
 import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
 
+type VerificationCountType =
+  | 'mealCount'
+  | 'walkCount'
+  | 'bathCount'
+  | 'treatCount';
+
 @Controller('pet')
 export class PetController {
   constructor(private readonly petService: PetService) {}
@@ -53,7 +59,7 @@ export class PetController {
   @Put('/verification/increase/:id/:type')
   setVerificationCountIncreasementByType(
     @Param('id') id: string,
-    @Param('type') type: string,
+    @Param('type') type: VerificationCountType,
   ) {
     return this.petService.setVerificationCountIncreasementByType(id, type);
   }
