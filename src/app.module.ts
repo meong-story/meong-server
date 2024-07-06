@@ -6,10 +6,17 @@ import { PetController } from './pet/pet.controller';
 import { ConfigModule } from '@nestjs/config';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
-import { Verification } from './pet/entities/verification.entity';
+import { VerificationPost } from './verification/entities/verificationPost.entity';
+import { VerificationService } from './verification/verification.service';
+import { VerificationCount } from './verification/entities/verificationCount.entity';
+import { VerificationController } from './verification/verification.controller';
+import { HttpModule } from '@nestjs/axios';
+import { User } from './user/entities/user.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    HttpModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -18,13 +25,13 @@ import { Verification } from './pet/entities/verification.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Pet, Verification],
+      entities: [Pet, VerificationPost, VerificationCount, User],
       synchronize: true,
       charset: 'utf8mb4',
     }),
-    TypeOrmModule.forFeature([Pet, Verification]),
+    TypeOrmModule.forFeature([Pet, VerificationPost, VerificationCount, User]),
   ],
-  providers: [PetService, AuthService],
-  controllers: [PetController, AuthController],
+  providers: [PetService, AuthService, VerificationService, JwtService],
+  controllers: [PetController, AuthController, VerificationController],
 })
 export class AppModule {}

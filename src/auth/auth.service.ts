@@ -1,27 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+// import * as bcrypt from 'bcrypt';
+import { User } from 'src/user/entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
-  private http: any;
-  constructor() {}
-  async kakaoLogin(apikey: string, redirectUri: string, code: string) {
-    const config = {
-      grant_type: 'authorization_code',
-      client_id: apikey,
-      redirect_uri: redirectUri,
-      code,
-    };
-    const params = new URLSearchParams(config).toString();
-    const tokenHeaders = {
-      'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-    };
-    const tokenUrl = `https://kauth.kakao.com/oauth/token?${params}`;
+  constructor(
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+    private readonly httpService: HttpService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
-    const res = await firstValueFrom(
-      this.http.post(tokenUrl, '', { headers: tokenHeaders }),
-    );
-    //@ts-expect-error res data has no type
-    console.log(res.data);
+  generateAccessToken(user: User): string {
+    const payload = {
+      userId: user.id,
+    };
+    return this.jwtService.sign(payload);
   }
 }
