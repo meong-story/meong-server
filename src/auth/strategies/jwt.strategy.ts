@@ -13,6 +13,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  async generateToken() {}
+
   async validate(
     accessToken: string,
     refreshToken: string,

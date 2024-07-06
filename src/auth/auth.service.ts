@@ -16,11 +16,38 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
+  async login(
+    id: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const accessToken = await this.generateAccessToken(id);
+    const refreshToken = await this.generateRefreshToken(id);
 
-  generateAccessToken(user: User): string {
-    const payload = {
-      userId: user.id,
-    };
-    return this.jwtService.sign(payload);
+    const user = await this.usersRepository.findOne({ where: { id } });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    user.refreshToken = refreshToken;
+    await this.usersRepository.save(user);
+    return { accessToken, refreshToken };
+  }
+
+  async generateAccessToken(id: string): Promise<string> {
+    const payload = { id };
+    return await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_SECRET'),
+      expiresIn: parseInt(this.configService.get<string>('JWT_EXPIRES_IN')),
+    });
+  }
+
+  async generateRefreshToken(id: string): Promise<string> {
+    const payload = { id };
+    return await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn: parseInt(
+        this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
+      ),
+    });
   }
 }

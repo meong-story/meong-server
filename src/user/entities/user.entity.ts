@@ -10,4 +10,10 @@ export class User {
 
   @Column()
   imageUrl?: string;
+
+  @Column()
+  refreshToken?: string;
+
+  @Column()
+  refreshTokenExp?: Date;
 }
