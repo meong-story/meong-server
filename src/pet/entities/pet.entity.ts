@@ -5,15 +5,15 @@ export class Pet {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @Column({ default: '미지정' })
+  @Column({ nullable: false })
   name: string;
 
-  @Column({ default: '' })
+  @Column({ nullable: false })
   imageUrl?: string;
 
-  @Column({ default: 2000 })
+  @Column({ nullable: false })
   birthYear: number;
 
-  @Column({ default: '남' })
+  @Column({ nullable: false })
   gender: '남' | '여';
 }
