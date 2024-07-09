@@ -16,6 +16,8 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtAccessTokenGuard } from './auth/guard/accessToken.guard';
 import { JwtAccessTokenStrategy } from './auth/strategies/accessToken.strategy';
 import { JwtRefreshTokenGuard } from './auth/guard/refreshToken.guard';
+import { UserService } from './user/user.service';
+import { PassportModule } from '@nestjs/passport';
 @Module({
   imports: [
     HttpModule,
@@ -23,10 +25,10 @@ import { JwtRefreshTokenGuard } from './auth/guard/refreshToken.guard';
       isGlobal: true,
     }),
     JwtModule.registerAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule.forRoot(), PassportModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+        secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
           expiresIn: '7d',
         },
@@ -52,6 +54,7 @@ import { JwtRefreshTokenGuard } from './auth/guard/refreshToken.guard';
   providers: [
     PetService,
     AuthService,
+    UserService,
     VerificationService,
     JwtService,
     JwtAccessTokenGuard,

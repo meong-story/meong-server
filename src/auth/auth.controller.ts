@@ -1,8 +1,18 @@
-import { Controller, Get, Header, Query, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { JwtAccessTokenGuard } from './guard/accessToken.guard';
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -27,7 +37,9 @@ export class AuthController {
     const userInfo = await this.getInfo(kakaoAccessToken);
 
     const { accessToken, refreshToken } = await this.authService.login(
-      userInfo.id,
+      userInfo.data.id,
+      userInfo.data.properties.nickname,
+      userInfo.data.properties.profile_image,
     );
 
     res.cookie('access_token', accessToken, { httpOnly: true });
@@ -54,5 +66,12 @@ export class AuthController {
 
   generateRefreshToken(id: string) {
     return this.authService.generateRefreshToken(id);
+  }
+
+  @Get('test')
+  @UseGuards(JwtAccessTokenGuard)
+  async test(@Req() req: any) {
+    console.log('test', req, this.configService.get<string>('JWT_SECRET'));
+    return { message: 'This is useGuard test' };
   }
 }

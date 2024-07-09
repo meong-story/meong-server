@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { User } from 'src/user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -15,21 +16,31 @@ export class AuthService {
     private readonly httpService: HttpService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly userService: UserService,
   ) {}
   async login(
-    id: string,
+    kakaoId: string,
+    name: string,
+    imageUrl: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const accessToken = await this.generateAccessToken(id);
-    const refreshToken = await this.generateRefreshToken(id);
-
-    const user = await this.usersRepository.findOne({ where: { id } });
-
+    const accessToken = await this.generateAccessToken(kakaoId);
+    const refreshToken = await this.generateRefreshToken(kakaoId);
+    let user = await this.userService.findOne(kakaoId);
     if (!user) {
-      throw new Error('User not found');
+      user = this.usersRepository.create({
+        name,
+        imageUrl,
+        kakaoId,
+        refreshToken,
+      });
+      await this.usersRepository.save(user);
+    } else {
+      user.refreshToken = refreshToken;
+      user.kakaoId = kakaoId;
+      user.imageUrl = imageUrl;
+      user.name = name;
+      await this.usersRepository.save(user);
     }
-
-    user.refreshToken = refreshToken;
-    await this.usersRepository.save(user);
     return { accessToken, refreshToken };
   }
 
@@ -37,7 +48,7 @@ export class AuthService {
     const payload = { id };
     return await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: parseInt(this.configService.get<string>('JWT_EXPIRES_IN')),
+      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
     });
   }
 
@@ -50,4 +61,6 @@ export class AuthService {
       ),
     });
   }
+
+  async validateUser() {}
 }

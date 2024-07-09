@@ -5,15 +5,18 @@ export class User {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @Column()
+  @Column({ unique: true, nullable: true })
+  kakaoId?: string;
+
+  @Column({ nullable: true })
   name?: string;
 
-  @Column()
+  @Column({ nullable: true })
   imageUrl?: string;
 
-  @Column()
+  @Column({ nullable: true })
   refreshToken?: string;
 
-  @Column()
+  @Column({ nullable: true })
   refreshTokenExp?: Date;
 }
