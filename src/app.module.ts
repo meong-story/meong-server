@@ -3,28 +3,64 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Pet } from './pet/entities/pet.entity';
 import { PetService } from './pet/pet.service';
 import { PetController } from './pet/pet.controller';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
-import { Verification } from './pet/entities/verification.entity';
-
+import { VerificationPost } from './verification/entities/verificationPost.entity';
+import { VerificationService } from './verification/verification.service';
+import { VerificationCount } from './verification/entities/verificationCount.entity';
+import { VerificationController } from './verification/verification.controller';
+import { HttpModule } from '@nestjs/axios';
+import { User } from './user/entities/user.entity';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtAccessTokenGuard } from './auth/guard/accessToken.guard';
+import { JwtAccessTokenStrategy } from './auth/strategies/accessToken.strategy';
+import { JwtRefreshTokenGuard } from './auth/guard/refreshToken.guard';
+import { UserService } from './user/user.service';
+import { PassportModule } from '@nestjs/passport';
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      entities: [Pet, Verification],
-      synchronize: true,
-      charset: 'utf8mb4',
+    HttpModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
-    TypeOrmModule.forFeature([Pet, Verification]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule.forRoot(), PassportModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: '7d',
+        },
+      }),
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST'),
+        port: parseInt(configService.get<string>('DB_PORT')),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        entities: [Pet, VerificationPost, VerificationCount, User],
+        synchronize: true,
+        charset: 'utf8mb4',
+      }),
+    }),
+    TypeOrmModule.forFeature([Pet, VerificationPost, VerificationCount, User]),
   ],
-  providers: [PetService, AuthService],
-  controllers: [PetController, AuthController],
+  providers: [
+    PetService,
+    AuthService,
+    UserService,
+    VerificationService,
+    JwtService,
+    JwtAccessTokenGuard,
+    JwtAccessTokenStrategy,
+    JwtRefreshTokenGuard,
+  ],
+  controllers: [PetController, AuthController, VerificationController],
 })
 export class AppModule {}

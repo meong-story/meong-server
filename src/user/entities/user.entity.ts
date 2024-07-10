@@ -3,11 +3,20 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  userId: string;
+  id: string;
 
-  @Column()
-  userName: string;
+  @Column({ unique: true, nullable: true })
+  kakaoId?: string;
 
-  @Column()
-  imageUrl: string;
+  @Column({ nullable: true })
+  name?: string;
+
+  @Column({ nullable: true })
+  imageUrl?: string;
+
+  @Column({ nullable: true })
+  refreshToken?: string;
+
+  @Column({ nullable: true })
+  refreshTokenExp?: Date;
 }

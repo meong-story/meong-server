@@ -8,22 +8,16 @@ import {
   Delete,
 } from '@nestjs/common';
 import { PetService } from './pet.service';
-import { CreatePetDto } from './dto/create-pet.dto';
-import { UpdatePetDto } from './dto/update-pet.dto';
+import { CreatePetDto } from './dto/createPet.dto';
+import { UpdatePetDto } from './dto/updatePet.dto';
 
-type VerificationCountType =
-  | 'mealCount'
-  | 'walkCount'
-  | 'bathCount'
-  | 'treatCount';
-
-@Controller('pet')
+@Controller('v1/api')
 export class PetController {
   constructor(private readonly petService: PetService) {}
 
-  @Post()
-  create(@Body() createPetDto: CreatePetDto) {
-    return this.petService.create(createPetDto);
+  @Post('signin')
+  createPet(@Body() createPetDto: CreatePetDto) {
+    return this.petService.createPet(createPetDto);
   }
 
   @Get()
@@ -44,23 +38,5 @@ export class PetController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.petService.remove(id);
-  }
-
-  @Get('/verification/:id')
-  getVerificationById(@Param('id') id: string) {
-    return this.petService.getVerificationById(id);
-  }
-
-  @Get('/petInfo/:id')
-  getPetInfoById(@Param('id') id: string) {
-    return this.petService.getPetInfoById(id);
-  }
-
-  @Put('/verification/increase/:id/:type')
-  setVerificationCountIncreasementByType(
-    @Param('id') id: string,
-    @Param('type') type: VerificationCountType,
-  ) {
-    return this.petService.setVerificationCountIncreasementByType(id, type);
   }
 }

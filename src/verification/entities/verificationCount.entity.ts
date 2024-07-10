@@ -5,10 +5,10 @@ import {
   JoinColumn,
   OneToOne,
 } from 'typeorm';
-import { Pet } from './pet.entity';
+import { Pet } from '../../pet/entities/pet.entity';
 
 @Entity()
-export class Verification {
+export class VerificationCount {
   @PrimaryGeneratedColumn()
   id: string;
 
@@ -20,14 +20,14 @@ export class Verification {
   pet: Pet;
 
   @Column({ default: 0 })
-  mealCount: number;
+  meal: number;
 
   @Column({ default: 0 })
-  walkCount: number;
+  walk: number;
 
   @Column({ default: 0 })
-  bathCount: number;
+  bath: number;
 
   @Column({ default: 0 })
-  treatCount: number;
+  treat: number;
 }

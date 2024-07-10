@@ -1,27 +1,66 @@
 import { Injectable } from '@nestjs/common';
-import { firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+// import * as bcrypt from 'bcrypt';
+import { User } from 'src/user/entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
-  private http: any;
-  constructor() {}
-  async kakaoLogin(apikey: string, redirectUri: string, code: string) {
-    const config = {
-      grant_type: 'authorization_code',
-      client_id: apikey,
-      redirect_uri: redirectUri,
-      code,
-    };
-    const params = new URLSearchParams(config).toString();
-    const tokenHeaders = {
-      'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-    };
-    const tokenUrl = `https://kauth.kakao.com/oauth/token?${params}`;
-
-    const res = await firstValueFrom(
-      this.http.post(tokenUrl, '', { headers: tokenHeaders }),
-    );
-    //@ts-expect-error res data has no type
-    console.log(res.data);
+  constructor(
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+    private readonly httpService: HttpService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly userService: UserService,
+  ) {}
+  async login(
+    kakaoId: string,
+    name: string,
+    imageUrl: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const accessToken = await this.generateAccessToken(kakaoId);
+    const refreshToken = await this.generateRefreshToken(kakaoId);
+    let user = await this.userService.findOne(kakaoId);
+    if (!user) {
+      user = this.usersRepository.create({
+        name,
+        imageUrl,
+        kakaoId,
+        refreshToken,
+      });
+      await this.usersRepository.save(user);
+    } else {
+      user.refreshToken = refreshToken;
+      user.kakaoId = kakaoId;
+      user.imageUrl = imageUrl;
+      user.name = name;
+      await this.usersRepository.save(user);
+    }
+    return { accessToken, refreshToken };
   }
+
+  async generateAccessToken(id: string): Promise<string> {
+    const payload = { id };
+    return await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_SECRET'),
+      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
+    });
+  }
+
+  async generateRefreshToken(id: string): Promise<string> {
+    const payload = { id };
+    return await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn: parseInt(
+        this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
+      ),
+    });
+  }
+
+  async validateUser() {}
 }

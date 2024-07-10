@@ -4,7 +4,7 @@ import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 declare module 'express' {
   interface Request extends Req {
     user: {
-      kakaoId?: number;
+      kakaoId?: string;
       userId?: UUID;
     };
   }
