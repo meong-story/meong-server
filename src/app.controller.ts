@@ -10,7 +10,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('/health')
+  @Get('health')
   @HttpCode(200)
   healthCheck(): string {
     return 'healthy';

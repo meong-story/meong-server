@@ -18,6 +18,8 @@ import { JwtAccessTokenStrategy } from './auth/strategies/accessToken.strategy';
 import { JwtRefreshTokenGuard } from './auth/guard/refreshToken.guard';
 import { UserService } from './user/user.service';
 import { PassportModule } from '@nestjs/passport';
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
 @Module({
   imports: [
     HttpModule,
@@ -52,6 +54,7 @@ import { PassportModule } from '@nestjs/passport';
     TypeOrmModule.forFeature([Pet, VerificationPost, VerificationCount, User]),
   ],
   providers: [
+    AppService,
     PetService,
     AuthService,
     UserService,
@@ -61,6 +64,11 @@ import { PassportModule } from '@nestjs/passport';
     JwtAccessTokenStrategy,
     JwtRefreshTokenGuard,
   ],
-  controllers: [PetController, AuthController, VerificationController],
+  controllers: [
+    PetController,
+    AuthController,
+    VerificationController,
+    AppController,
+  ],
 })
 export class AppModule {}

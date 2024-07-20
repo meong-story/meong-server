@@ -20,7 +20,7 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
-  // 카카오 로그인 진입
+  // 카카오 로그인 페이지 진입
   @Get('kakao-login-page')
   @Header('Content-Type', 'application/json')
   async kakaoRedirect(@Res() res: Response): Promise<void> {
@@ -28,11 +28,14 @@ export class AuthController {
     res.redirect(url);
   }
 
+  // 카카오 인가 코드 처리
   @Get('kakao-login')
   @Header('Content-Type', 'application/json')
-  async kakao(@Query() code: any, @Res() res: Response): Promise<any> {
-    const url = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_url=http://localhost:5173/&code=${code.code}`;
+  async kakao(@Query('code') code: string, @Res() res: Response): Promise<any> {
+    const url = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_url=http://localhost:5173/auth/kakao/callback&code=${code}`;
+
     const token_res = await axios.post(url);
+    console.log('debug', token_res);
     const kakaoAccessToken: string = token_res.data.access_token;
     const userInfo = await this.getInfo(kakaoAccessToken);
 
@@ -44,7 +47,7 @@ export class AuthController {
 
     res.cookie('access_token', accessToken, { httpOnly: true });
     res.cookie('refresh_token', refreshToken, { httpOnly: true });
-    res.redirect('http://localhost:5173/');
+    res.redirect('http://localhost:5173');
     return userInfo;
   }
 

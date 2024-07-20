@@ -22,6 +22,7 @@ export class PetController {
 
   @Get()
   findAll() {
+    console.log('read all');
     return this.petService.findAll();
   }
 
