@@ -24,15 +24,16 @@ export class AuthController {
   @Get('kakao-login-page')
   @Header('Content-Type', 'application/json')
   async kakaoRedirect(@Res() res: Response): Promise<void> {
-    const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=${this.configService.get<string>('CODE_REDIRECT_URI')}`;
+    // const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=${this.configService.get<string>('CODE_REDIRECT_URI')}`;
+    const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=https://api.owonie-dev.store/auth/kakao-login`;
     res.redirect(url);
   }
 
   // 카카오 인가 코드 처리
   @Get('kakao-login')
   @Header('Content-Type', 'application/json')
-  async kakao(@Query('code') code: string, @Res() res: Response): Promise<any> {
-    const url = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_url=http://localhost:5173/auth/kakao/callback&code=${code}`;
+  async kakao(@Query() code: any, @Res() res: Response): Promise<any> {
+    const url = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_url=http://localhost:5173/auth/kakao/callback&code=${code.code}`;
 
     const token_res = await axios.post(url);
     console.log('debug', token_res);
