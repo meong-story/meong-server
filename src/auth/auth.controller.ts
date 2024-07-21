@@ -46,8 +46,8 @@ export class AuthController {
       userInfo.data.properties.profile_image,
     );
 
-    res.cookie('access_token', accessToken, { httpOnly: true });
-    res.cookie('refresh_token', refreshToken, { httpOnly: true });
+    res.cookie('access_token', accessToken, { secure: true });
+    res.cookie('refresh_token', refreshToken, { secure: true });
     res.redirect('http://localhost:5173');
     return userInfo;
   }
