@@ -49,15 +49,16 @@ export class AuthController {
     res.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: false,
+      sameSite: 'lax',
+      domain: '.owonie-dev.store',
     });
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: false,
+      sameSite: 'lax',
+      domain: '.owonie-dev.store',
     });
     res.redirect('http://localhost:5173');
-    return userInfo;
   }
 
   @Get('get-kakao-info')
