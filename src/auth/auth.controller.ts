@@ -45,19 +45,13 @@ export class AuthController {
       userInfo.data.properties.nickname,
       userInfo.data.properties.profile_image,
     );
+    const refresh_token_expires_in = 60 * 60 * 24 * 30;
 
-    res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      domain: '.owonie-dev.store',
-    });
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      domain: '.owonie-dev.store',
-    });
+    res.setHeader('Set-Cookie', [
+      `access_token=${accessToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Domain=.owonie-dev.store; Max-Age=${refresh_token_expires_in}`,
+      `refresh_token=${refreshToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Domain=.owonie-dev.store; Max-Age=${refresh_token_expires_in}`,
+    ]);
+
     res.redirect('http://localhost:5173');
   }
 
