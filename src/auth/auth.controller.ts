@@ -25,7 +25,8 @@ export class AuthController {
   @Header('Content-Type', 'application/json')
   async kakaoRedirect(@Res() res: Response): Promise<void> {
     // const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=${this.configService.get<string>('CODE_REDIRECT_URI')}`;
-    const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=http://localhost:5173/oauth/kakao/callback`;
+    const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=https://api.owonie-dev.store/auth/kakao-login`;
+    console.log('yalo');
     res.redirect(url);
   }
 
@@ -33,7 +34,8 @@ export class AuthController {
   @Get('kakao-login')
   @Header('Content-Type', 'application/json')
   async kakao(@Query('code') code: any, @Res() res: Response): Promise<any> {
-    const url = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=http://localhost:5173/&code=${code.code}`;
+    console.log('code', code);
+    const url = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=https://api.owonie-dev.store/auth/kakao-login&code=${code}`;
 
     const token_res = await axios.post(url);
     console.log('debug', token_res);
@@ -64,7 +66,7 @@ export class AuthController {
       //domain: '.owonie-dev.store',
       maxAge: refresh_token_expires_in * 1000,
     });
-
+    res.redirect('http://localhost:5173');
     res.json({ message: 'Authentication successful', user: userInfo.data });
   }
 
