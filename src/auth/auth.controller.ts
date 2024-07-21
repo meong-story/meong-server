@@ -25,7 +25,7 @@ export class AuthController {
   @Header('Content-Type', 'application/json')
   async kakaoRedirect(@Res() res: Response): Promise<void> {
     // const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=${this.configService.get<string>('CODE_REDIRECT_URI')}`;
-    const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=https://api.owonie-dev.store/auth/kakao-login`;
+    const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=http://localhost:3000/auth/kakao-login`;
     res.redirect(url);
   }
 
@@ -47,10 +47,23 @@ export class AuthController {
     );
     const refresh_token_expires_in = 60 * 60 * 24 * 30;
 
-    res.setHeader('Set-Cookie', [
-      `access_token=${accessToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Domain=.owonie-dev.store; Max-Age=${refresh_token_expires_in}`,
-      `refresh_token=${refreshToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Domain=.owonie-dev.store; Max-Age=${refresh_token_expires_in}`,
-    ]);
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/',
+      // domain: '.owonie-dev.store',
+      maxAge: refresh_token_expires_in * 1000,
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/',
+      // domain: '.owonie-dev.store',
+      maxAge: refresh_token_expires_in * 1000,
+    });
 
     res.redirect('http://localhost:5173');
   }
