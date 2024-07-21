@@ -46,18 +46,10 @@ export class AuthController {
       userInfo.data.properties.profile_image,
     );
 
-    res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      domain: '.owonie-dev.store',
-    });
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      domain: '.owonie-dev.store',
-    });
+    res.setHeader('Set-Cookie', [
+      `access_token=${accessToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Domain=.owonie-dev.store;`,
+      `refresh_token=${refreshToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Domain=.owonie-dev.store;`,
+    ]);
     res.redirect('http://localhost:5173');
   }
 
