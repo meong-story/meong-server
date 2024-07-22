@@ -1,3 +1,4 @@
+import { UserService } from './../user/user.service';
 import {
   Controller,
   Get,
@@ -18,6 +19,7 @@ import { JwtRefreshTokenGuard } from './guard/refreshToken.guard';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly userService: UserService,
     private readonly configService: ConfigService,
   ) {}
 

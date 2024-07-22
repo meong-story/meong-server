@@ -60,6 +60,4 @@ export class AuthService {
       expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
     });
   }
-
-  async validateUser() {}
 }

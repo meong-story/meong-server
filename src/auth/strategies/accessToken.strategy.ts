@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
+import { Request } from 'express';
 
 @Injectable()
 export class JwtAccessTokenStrategy extends PassportStrategy(
@@ -16,7 +17,8 @@ export class JwtAccessTokenStrategy extends PassportStrategy(
       passReqToCallback: true,
     });
   }
-  async validate(payload: any) {
-    return { ...payload };
+  async validate(req: Request, payload: any) {
+    req.user = payload;
+    return payload;
   }
 }
