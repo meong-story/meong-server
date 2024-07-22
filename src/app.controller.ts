@@ -12,7 +12,7 @@ export class AppController {
 
   @Get('health')
   @HttpCode(200)
-  healthCheck(): string {
-    return 'healthy';
+  healthCheck() {
+    return { status: 'healthy' };
   }
 }

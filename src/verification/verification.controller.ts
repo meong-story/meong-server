@@ -6,12 +6,14 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 
 import { VerificationService } from './verification.service';
 import { CreateVerificationPostDto } from './dto/createVerificationPost.dto';
+import { JwtAccessTokenGuard } from 'src/auth/guard/accessToken.guard';
 
-@Controller('api/v1')
+@Controller('verification')
 export class VerificationController {
   constructor(private readonly verificationService: VerificationService) {}
 
@@ -24,6 +26,7 @@ export class VerificationController {
   }
 
   @Get('post')
+  @UseGuards(JwtAccessTokenGuard)
   findAll() {
     return this.verificationService.findAll();
   }
