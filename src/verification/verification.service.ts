@@ -4,43 +4,47 @@ import { Repository } from 'typeorm';
 import { VerificationPost } from './entities/verificationPost.entity';
 import { CreateVerificationPostDto } from './dto/createVerificationPost.dto';
 import { VerificationCount } from './entities/verificationCount.entity';
-import { CreateVerificationPostResponseDto } from './dto/createVerificationPostResponse.dto';
 import { InfiniteScrollSlideResponse } from './dto/infiniteScrollSlideResponse.dto';
 import { InfiniteScrollGridResponse } from './dto/infiniteScrollGiidResponse.dto';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class VerificationService {
-  @InjectRepository(VerificationPost)
-  private readonly verificationPostRepository: Repository<VerificationPost>;
-  @InjectRepository(VerificationCount)
-  private readonly verificationCountRepository: Repository<VerificationCount>;
+  constructor(
+    @InjectRepository(VerificationPost)
+    private readonly verificationPostRepository: Repository<VerificationPost>,
+    @InjectRepository(VerificationCount)
+    private readonly verificationCountRepository: Repository<VerificationCount>,
+    private readonly userService: UserService,
+  ) {}
 
   async createPost(
-    type: string,
+    kakaoId: string,
     createVerificationPost: CreateVerificationPostDto,
-  ): Promise<CreateVerificationPostResponseDto> {
+  ): Promise<void> {
     const newPost = new VerificationPost();
-    newPost.petId = createVerificationPost.petId;
+    const user = await this.userService.findOne(kakaoId);
+    newPost.petId = user.petId;
+    newPost.author = kakaoId;
 
     await this.verificationPostRepository.save(newPost);
     const postCount = await this.verificationCountRepository.findOne({
-      where: { petId: createVerificationPost.petId },
+      where: { petId: user.petId },
     });
-    postCount[type] += 1;
+    postCount[createVerificationPost.type] += 1;
+
     await this.verificationCountRepository.save(postCount);
-    const res = new CreateVerificationPostResponseDto(
-      '인증 포스트 추가 완료!',
-      createVerificationPost,
-    );
-    return res;
   }
 
   async findAll() {
     return await this.verificationPostRepository.find();
   }
 
-  async getVerificationByPetId(petId: string): Promise<VerificationCount> {
-    return await this.verificationCountRepository.findOne({ where: { petId } });
+  async getVerificationByPetId(id: string): Promise<VerificationCount> {
+    const user = await this.userService.findOne(id);
+    return await this.verificationCountRepository.findOne({
+      where: { id: user.petId },
+    });
   }
 
   async remove(id: string): Promise<VerificationPost> {
@@ -55,10 +59,18 @@ export class VerificationService {
       );
     }
   }
-  async getSlide(currentPage: number): Promise<InfiniteScrollSlideResponse> {
+  async getSlide(
+    kakaoId: string,
+    currentPage: number,
+  ): Promise<InfiniteScrollSlideResponse> {
     const pageSize = 10;
+    if (currentPage < 1) {
+      currentPage = 1;
+    }
+
     const [posts, totalItems] =
       await this.verificationPostRepository.findAndCount({
+        where: { author: kakaoId },
         order: { createdAt: 'DESC' },
         skip: (currentPage - 1) * pageSize,
         take: pageSize,

@@ -28,7 +28,7 @@ export class UserService {
   async addPetToUser(kakaoId: string, petId: string): Promise<void> {
     const user = await this.userRepository.findOne({ where: { kakaoId } });
     if (user) {
-      user.petIds = [...(user.petIds || []), petId];
+      user.petId = petId;
       await this.userRepository.save(user);
     }
   }

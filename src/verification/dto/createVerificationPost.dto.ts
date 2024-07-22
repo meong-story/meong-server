@@ -1,6 +1,5 @@
 export class CreateVerificationPostDto {
-  id: string;
-  petId: string;
+  type: 'walk' | 'meal' | 'treat' | 'bath' | 'daily';
   verificationOption?: string;
   imageUrl?: string;
   comment?: string;

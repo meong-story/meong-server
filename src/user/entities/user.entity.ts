@@ -20,6 +20,6 @@ export class User {
   @Column({ nullable: true })
   refreshTokenExp?: Date;
 
-  @Column('simple-array', { nullable: true })
-  petIds: string[];
+  @Column({ nullable: true })
+  petId: string;
 }
