@@ -1,3 +1,4 @@
+import { UserService } from './../user/user.service';
 import {
   Controller,
   Get,
@@ -7,19 +8,33 @@ import {
   Param,
   Delete,
   Res,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { PetService } from './pet.service';
 import { CreatePetDto } from './dto/createPet.dto';
 import { UpdatePetDto } from './dto/updatePet.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { JwtAccessTokenGuard } from 'src/auth/guard/accessToken.guard';
 
 @Controller('pet')
 export class PetController {
-  constructor(private readonly petService: PetService) {}
+  constructor(
+    private readonly petService: PetService,
+    private readonly userService: UserService,
+  ) {}
 
   @Post('register')
-  async createPet(@Body() createPetDto: CreatePetDto, @Res() res: Response) {
+  @UseGuards(JwtAccessTokenGuard)
+  async createPet(
+    @Body() createPetDto: CreatePetDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
     const petInfo = await this.petService.createPet(createPetDto);
+    const user = await this.userService.findOne(req.user.kakaoId);
+
+    await this.userService.addPetToUser(user.kakaoId, petInfo.id);
     res.json({
       message: '애완동물 등록 성공',
       data: petInfo,

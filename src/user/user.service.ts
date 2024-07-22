@@ -18,7 +18,19 @@ export class UserService {
   }
 
   async findOne(kakaoId: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { kakaoId } });
+    return await this.userRepository.findOne({ where: { kakaoId } });
+  }
+
+  async updateUserInfo(kakaoId: string, userInfo: User): Promise<void> {
+    await this.userRepository.update({ kakaoId }, userInfo);
+  }
+
+  async addPetToUser(kakaoId: string, petId: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { kakaoId } });
+    if (user) {
+      user.petIds = [...(user.petIds || []), petId];
+      await this.userRepository.save(user);
+    }
   }
 
   remove(id: number) {
