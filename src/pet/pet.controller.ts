@@ -6,18 +6,24 @@ import {
   Put,
   Param,
   Delete,
+  Res,
 } from '@nestjs/common';
 import { PetService } from './pet.service';
 import { CreatePetDto } from './dto/createPet.dto';
 import { UpdatePetDto } from './dto/updatePet.dto';
+import { Response } from 'express';
 
-@Controller('v1/api')
+@Controller('pet')
 export class PetController {
   constructor(private readonly petService: PetService) {}
 
-  @Post('signin')
-  createPet(@Body() createPetDto: CreatePetDto) {
-    return this.petService.createPet(createPetDto);
+  @Post('register')
+  async createPet(@Body() createPetDto: CreatePetDto, @Res() res: Response) {
+    const petInfo = await this.petService.createPet(createPetDto);
+    res.json({
+      message: '애완동물 등록 성공',
+      data: petInfo,
+    });
   }
 
   @Get()

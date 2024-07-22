@@ -1,4 +1,3 @@
-import { UserService } from './../user/user.service';
 import {
   Controller,
   Get,
@@ -12,14 +11,12 @@ import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { JwtAccessTokenGuard } from './guard/accessToken.guard';
 import { JwtRefreshTokenGuard } from './guard/refreshToken.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -88,12 +85,6 @@ export class AuthController {
 
   generateRefreshToken(id: string) {
     return this.authService.generateRefreshToken(id);
-  }
-
-  @Get('test')
-  @UseGuards(JwtAccessTokenGuard)
-  async test() {
-    return { message: 'This is useGuard test' };
   }
 
   @Get('refresh')

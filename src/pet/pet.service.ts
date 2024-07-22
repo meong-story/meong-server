@@ -16,7 +16,7 @@ export class PetService {
     private readonly verificationRepository: Repository<VerificationCount>,
   ) {}
 
-  async createPet(createPetDto: CreatePetDto): Promise<string> {
+  async createPet(createPetDto: CreatePetDto): Promise<CreatePetDto> {
     const newPet = new Pet();
     newPet.name = createPetDto.name;
     newPet.birthYear = createPetDto.birthYear;
@@ -30,7 +30,7 @@ export class PetService {
 
     await this.verificationRepository.save(newVerification);
 
-    return '애완동물 등록 성공!';
+    return newPet;
   }
 
   async findAll() {
