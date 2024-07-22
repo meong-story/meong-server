@@ -3,8 +3,8 @@ import {
   Get,
   Header,
   Query,
-  Req,
   Res,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -12,6 +12,7 @@ import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { JwtAccessTokenGuard } from './guard/accessToken.guard';
+import { JwtRefreshTokenGuard } from './guard/refreshToken.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -89,8 +90,25 @@ export class AuthController {
 
   @Get('test')
   @UseGuards(JwtAccessTokenGuard)
-  async test(@Req() req: any) {
-    console.log('test', req, this.configService.get<string>('JWT_SECRET'));
+  async test() {
     return { message: 'This is useGuard test' };
+  }
+
+  @Get('refresh')
+  @UseGuards(JwtRefreshTokenGuard)
+  async getRefreshToken(@Req() req, @Res() res: Response) {
+    const id = req.id;
+
+    const newAccessToken = await this.authService.generateAccessToken(id);
+    const newRefreshToken = await this.authService.generateRefreshToken(id);
+
+    res.cookie('refresh_token', newRefreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    return res.json({
+      message: 'Refresh token is valid',
+      accessToken: newAccessToken,
+    });
   }
 }

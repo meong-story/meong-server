@@ -20,6 +20,7 @@ import { UserService } from './user/user.service';
 import { PassportModule } from '@nestjs/passport';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
+import { JwtRefreshTokenStrategy } from './auth/strategies/refreshToken.strategy';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { AppController } from './app.controller';
     JwtAccessTokenGuard,
     JwtAccessTokenStrategy,
     JwtRefreshTokenGuard,
+    JwtRefreshTokenStrategy,
   ],
   controllers: [
     PetController,

@@ -54,11 +54,10 @@ export class AuthService {
 
   async generateRefreshToken(id: string): Promise<string> {
     const payload = { id };
+
     return await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      expiresIn: parseInt(
-        this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
-      ),
+      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
     });
   }
 
