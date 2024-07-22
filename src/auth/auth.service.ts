@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 // import * as bcrypt from 'bcrypt';
@@ -13,7 +12,6 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-    private readonly httpService: HttpService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly userService: UserService,
@@ -44,16 +42,17 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async generateAccessToken(id: string): Promise<string> {
-    const payload = { id };
+  async generateAccessToken(kakaoId: string): Promise<string> {
+    const payload = { kakaoId };
+
     return await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_SECRET'),
       expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
     });
   }
 
-  async generateRefreshToken(id: string): Promise<string> {
-    const payload = { id };
+  async generateRefreshToken(kakaoId: string): Promise<string> {
+    const payload = { kakaoId };
 
     return await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
