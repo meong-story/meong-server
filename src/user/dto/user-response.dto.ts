@@ -1,9 +1,9 @@
 export class UserResponseDTO {
-  kakaoId: string;
-  name: string;
-  imageUrl: string;
-  petId: string;
-
+  kakaoId?: string;
+  name?: string;
+  imageUrl?: string;
+  petId?: string;
+  refreshToken?: string;
   constructor(kakaoId: string, name: string, imageUrl: string, petId: string) {
     this.kakaoId = kakaoId;
     this.name = name;

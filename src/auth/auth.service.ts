@@ -26,9 +26,9 @@ export class AuthService {
     let user = await this.userService.findOneById(kakaoId);
     if (!user) {
       user = this.usersRepository.create({
+        kakaoId,
         name,
         imageUrl,
-        kakaoId,
         refreshToken,
       });
       await this.usersRepository.save(user);
