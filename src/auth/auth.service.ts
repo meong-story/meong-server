@@ -23,7 +23,7 @@ export class AuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const accessToken = await this.generateAccessToken(kakaoId);
     const refreshToken = await this.generateRefreshToken(kakaoId);
-    let user = await this.userService.findOne(kakaoId);
+    let user = await this.userService.findOneById(kakaoId);
     if (!user) {
       user = this.usersRepository.create({
         name,
