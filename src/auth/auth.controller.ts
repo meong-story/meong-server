@@ -46,15 +46,6 @@ export class AuthController {
     );
     const refresh_token_expires_in = 60 * 60 * 24 * 30;
 
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      path: '/',
-      // domain: '.owonie-dev.store',
-      maxAge: refresh_token_expires_in * 1000,
-    });
-
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: true,
@@ -63,7 +54,10 @@ export class AuthController {
       //domain: '.owonie-dev.store',
       maxAge: refresh_token_expires_in * 1000,
     });
-    res.redirect('http://localhost:5173');
+    return res.json({
+      message: 'New access token is generated',
+      accessToken: accessToken,
+    });
   }
 
   @Get('get-kakao-info')
