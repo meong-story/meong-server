@@ -15,5 +15,5 @@ export class Pet {
   birthYear: number;
 
   @Column({ nullable: false })
-  gender: '남' | '여';
+  gender: 'M' | 'F';
 }

@@ -4,6 +4,6 @@ import { CreatePetDto } from './createPet.dto';
 export class UpdatePetDto extends PartialType(CreatePetDto) {
   name?: string;
   imageUrl?: string;
-  gender?: '남' | '여';
+  gender?: 'M' | 'F';
   birthYear?: number;
 }

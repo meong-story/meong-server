@@ -4,16 +4,13 @@ import {
   Get,
   Post,
   Body,
-  Put,
-  Param,
-  Delete,
   Res,
   Req,
   UseGuards,
+  Param,
 } from '@nestjs/common';
 import { PetService } from './pet.service';
 import { CreatePetDto } from './dto/createPet.dto';
-import { UpdatePetDto } from './dto/updatePet.dto';
 import { Request, Response } from 'express';
 import { JwtAccessTokenGuard } from 'src/auth/guard/accessToken.guard';
 
@@ -31,13 +28,23 @@ export class PetController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const petInfo = await this.petService.createPet(createPetDto);
-    const user = await this.userService.findOne(req.user.kakaoId);
+    const pet = await this.petService.createPet(createPetDto);
 
-    await this.userService.addPetToUser(user.kakaoId, petInfo.id);
+    await this.userService.addPetToUser(req.user.kakaoId, pet.id);
     res.json({
       message: '애완동물 등록 성공',
-      data: petInfo,
+      data: pet,
+    });
+  }
+
+  @Get('info')
+  @UseGuards(JwtAccessTokenGuard)
+  async getPetInfo(@Param('petId') petId: string, @Res() res: Response) {
+    const pet = await this.petService.findOneById(petId);
+
+    res.json({
+      message: 'Get pet information successfully!',
+      data: pet,
     });
   }
 
@@ -45,20 +52,5 @@ export class PetController {
   findAll() {
     console.log('read all');
     return this.petService.findAll();
-  }
-
-  @Get(':id')
-  findOneById(@Param('id') id: string) {
-    return this.petService.findOneById(id);
-  }
-
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() updatedPet: UpdatePetDto) {
-    return this.petService.update(id, updatedPet);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.petService.remove(id);
   }
 }
