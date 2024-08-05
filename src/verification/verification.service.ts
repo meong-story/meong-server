@@ -23,7 +23,7 @@ export class VerificationService {
     createVerificationPost: CreateVerificationPostDto,
   ): Promise<void> {
     const newPost = new VerificationPost();
-    const user = await this.userService.findOne(kakaoId);
+    const user = await this.userService.findOneById(kakaoId);
     newPost.petId = user.petId;
     newPost.author = kakaoId;
 
@@ -41,7 +41,7 @@ export class VerificationService {
   }
 
   async getVerificationByPetId(id: string): Promise<VerificationCount> {
-    const user = await this.userService.findOne(id);
+    const user = await this.userService.findOneById(id);
     return await this.verificationCountRepository.findOne({
       where: { id: user.petId },
     });

@@ -10,10 +10,10 @@ export class UserController {
   @Get('info')
   @UseGuards(JwtAccessTokenGuard)
   async getUserInfo(@Req() req, @Res() res: Response) {
-    const userInfo = await this.userService.findOne(req.id);
+    const user = await this.userService.findOneById(req.id);
     return res.json({
       message: 'Valid User',
-      data: userInfo,
+      data: user,
     });
   }
 }

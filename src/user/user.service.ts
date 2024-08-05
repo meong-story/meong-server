@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserResponseDTO } from './dto/user-response.dto';
 
 @Injectable()
 export class UserService {
@@ -17,8 +18,19 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  async findOne(kakaoId: string): Promise<User | undefined> {
-    return await this.userRepository.findOne({ where: { kakaoId } });
+  async findOneById(kakaoId: string): Promise<UserResponseDTO | undefined> {
+    const user: User = await this.userRepository.findOne({
+      where: { kakaoId },
+    });
+    if (!user) {
+      return undefined;
+    }
+    return new UserResponseDTO(
+      user.kakaoId,
+      user.name,
+      user.imageUrl,
+      user.petId,
+    );
   }
 
   async updateUserInfo(kakaoId: string, userInfo: User): Promise<void> {
