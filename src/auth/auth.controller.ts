@@ -12,8 +12,17 @@ import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { JwtRefreshTokenGuard } from './guard/refreshToken.guard';
+import {
+  ApiCookieAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
+import { TokenResponseDTO } from './dto/token-response.dto';
 
-@Controller('auth')
+@Controller('v1/auth')
+@ApiTags('인증 API')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -28,8 +37,17 @@ export class AuthController {
     res.redirect(url);
   }
 
-  // 카카오 인가 코드 처리
   @Get('kakao-login')
+  @ApiOperation({
+    summary: '카카오 인가 코드 처리',
+    description:
+      '인가 코드를 받고, 액세스 토큰과 리프레쉬 토큰을 반환합니다. 리프레쉬 토큰은 헤더에 저장합니다.',
+  })
+  @ApiQuery({ name: 'code', required: true, description: '카카오 인가 코드' })
+  @ApiCreatedResponse({
+    description: '새로운 액세스 토큰을 받아옵니다.',
+    type: TokenResponseDTO,
+  })
   @Header('Content-Type', 'application/json')
   async kakao(@Query('code') code: any, @Res() res: Response): Promise<any> {
     const url = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${this.configService.get<string>('KAKAO_API_KEY')}&redirect_uri=${this.configService.get<string>('CODE_REDIRECT_URI')}&code=${code}`;
@@ -81,6 +99,15 @@ export class AuthController {
   }
 
   @Get('refresh')
+  @ApiCookieAuth()
+  @ApiOperation({
+    summary: '액세스 토큰 재발급',
+    description: '리프레쉬 토큰을 참조하여 새로운 액세스 토큰을 발급받습니다.',
+  })
+  @ApiCreatedResponse({
+    description: '새로운 액세스 토큰을 받아옵니다.',
+    type: TokenResponseDTO,
+  })
   @UseGuards(JwtRefreshTokenGuard)
   async getRefreshToken(@Req() req, @Res() res: Response) {
     const id = req.id;
