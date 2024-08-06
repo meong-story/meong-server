@@ -9,6 +9,8 @@ async function bootstrap() {
     .setTitle('API 문서')
     .setDescription('API 문서입니다.')
     .setVersion('1.0')
+    .addBearerAuth()
+    .addCookieAuth('cookie')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
