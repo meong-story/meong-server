@@ -21,7 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { TokenResponseDTO } from './dto/token-response.dto';
 
-@Controller('v1/auth')
+@Controller('auth')
 @ApiTags('인증 API')
 export class AuthController {
   constructor(
