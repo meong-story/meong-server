@@ -17,6 +17,7 @@ import {
   ApiCreatedResponse,
   ApiOperation,
   ApiQuery,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { TokenResponseDTO } from './dto/token-response.dto';
@@ -108,6 +109,8 @@ export class AuthController {
     description: '새로운 액세스 토큰을 받아옵니다.',
     type: TokenResponseDTO,
   })
+  @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
+  @ApiResponse({ status: 401, description: 'Invalid refresh token' })
   @UseGuards(JwtRefreshTokenGuard)
   async getRefreshToken(@Req() req, @Res() res: Response) {
     const id = req.id;

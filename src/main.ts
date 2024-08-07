@@ -9,7 +9,10 @@ async function bootstrap() {
     .setTitle('API 문서')
     .setDescription('API 문서입니다.')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', name: 'JWT', in: 'header' },
+      'access-token',
+    )
     .addCookieAuth('cookie')
     .build();
 

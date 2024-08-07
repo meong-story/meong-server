@@ -23,9 +23,16 @@ export class UserService {
       where: { kakaoId },
     });
     if (!user) {
-      return undefined;
+      return new UserResponseDTO(
+        'Invalid user id!',
+        user.kakaoId,
+        user.name,
+        user.imageUrl,
+        user.petId,
+      );
     }
     return new UserResponseDTO(
+      'User data retrieved successfully',
       user.kakaoId,
       user.name,
       user.imageUrl,
